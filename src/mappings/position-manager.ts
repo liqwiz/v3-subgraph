@@ -6,10 +6,11 @@ import {
   NonfungiblePositionManager,
   Transfer
 } from '../types/NonfungiblePositionManager/NonfungiblePositionManager'
-import { Bundle, Position, PositionSnapshot, Token } from '../types/schema'
+import { Position, PositionSnapshot } from '../types/schema'
 import { ADDRESS_ZERO, factoryContract, ZERO_BD, ZERO_BI } from '../utils/constants'
 import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts'
 import { convertTokenToDecimal, loadTransaction } from '../utils'
+import { fetchTokenDecimals } from '../utils/token'
 
 function getPosition(event: ethereum.Event, tokenId: BigInt): Position | null {
   let position = Position.load(tokenId.toString())
@@ -97,11 +98,10 @@ export function handleIncreaseLiquidity(event: IncreaseLiquidity): void {
     return
   }
 
-  let token0 = Token.load(position.token0)
-  let token1 = Token.load(position.token1)
-
-  let amount0 = convertTokenToDecimal(event.params.amount0, token0.decimals)
-  let amount1 = convertTokenToDecimal(event.params.amount1, token1.decimals)
+  let token0Decimals = fetchTokenDecimals(Address.fromString(position.token0))
+  let token1Decimals = fetchTokenDecimals(Address.fromString(position.token1))
+  let amount0 = convertTokenToDecimal(event.params.amount0, token0Decimals)
+  let amount1 = convertTokenToDecimal(event.params.amount1, token1Decimals)
 
   position.liquidity = position.liquidity.plus(event.params.liquidity)
   position.depositedToken0 = position.depositedToken0.plus(amount0)
@@ -132,10 +132,10 @@ export function handleDecreaseLiquidity(event: DecreaseLiquidity): void {
     return
   }
 
-  let token0 = Token.load(position.token0)
-  let token1 = Token.load(position.token1)
-  let amount0 = convertTokenToDecimal(event.params.amount0, token0.decimals)
-  let amount1 = convertTokenToDecimal(event.params.amount1, token1.decimals)
+  let token0Decimals = fetchTokenDecimals(Address.fromString(position.token0))
+  let token1Decimals = fetchTokenDecimals(Address.fromString(position.token1))
+  let amount0 = convertTokenToDecimal(event.params.amount0, token0Decimals)
+  let amount1 = convertTokenToDecimal(event.params.amount1, token1Decimals)
 
   position.liquidity = position.liquidity.minus(event.params.liquidity)
   position.withdrawnToken0 = position.withdrawnToken0.plus(amount0)
@@ -156,8 +156,8 @@ export function handleCollect(event: Collect): void {
     return
   }
 
-  let token0 = Token.load(position.token0)
-  let amount0 = convertTokenToDecimal(event.params.amount0, token0.decimals)
+  let token0Decimals = fetchTokenDecimals(Address.fromString(position.token0))
+  let amount0 = convertTokenToDecimal(event.params.amount0, token0Decimals)
   position.collectedFeesToken0 = position.collectedFeesToken0.plus(amount0)
   position.collectedFeesToken1 = position.collectedFeesToken1.plus(amount0)
 
