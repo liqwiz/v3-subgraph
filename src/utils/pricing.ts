@@ -4,8 +4,8 @@ import { Bundle, Pool, Token } from './../types/schema'
 import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 import { exponentToBigDecimal, safeDiv } from '../utils/index'
 
-const PREPO_BASE_TOKEN = '0x8E0ac02cd975AbFD3238e553a81380275141A566'.toLowerCase()
-const PREPO_COLLATERAL_TOKEN = '0x7B234da24198e74e407cFb923e09917D4Fc31289'.toLowerCase()
+const PREPO_BASE_TOKEN = '0x8e0ac02cd975abfd3238e553a81380275141a566'
+const PREPO_COLLATERAL_TOKEN = '0x7b234da24198e74e407cfb923e09917d4fc31289'
 
 // token where amounts should contribute to tracked volume and liquidity
 // usually tokens that many tokens are paired with s
